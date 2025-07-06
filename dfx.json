@@ -1,0 +1,36 @@
+{
+  "canisters": {
+    "art_co_ownership_backend": {
+      "candid": "src/art_co_ownership_backend/art_co_ownership_backend.did",
+      "package": "art_co_ownership_backend",
+      "type": "rust"
+    },
+    "art_co_ownership_frontend": {
+      "dependencies": [
+        "art_co_ownership_backend"
+      ],
+      "frontend": {
+        "entrypoint": "art-co-ownership-frontend/dist/index.html"
+      },
+      "source": [
+        "art-co-ownership-frontend/dist/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:4943",
+      "type": "ephemeral"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
+

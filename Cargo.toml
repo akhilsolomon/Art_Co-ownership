@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/art_co_ownership_backend"
+]
+resolver = "2"

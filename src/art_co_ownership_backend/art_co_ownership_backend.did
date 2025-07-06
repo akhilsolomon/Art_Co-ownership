@@ -1,0 +1,84 @@
+type ArtPiece = record {
+  id : nat64;
+  title : text;
+  artist : text;
+  description : text;
+  image_url : text;
+  total_tokens : nat64;
+  price_per_token : nat64;
+  created_at : nat64;
+  creator : principal;
+  verified : bool;
+};
+
+type TokenOwnership = record {
+  art_id : nat64;
+  owner : principal;
+  tokens_owned : nat64;
+  purchase_price : nat64;
+  purchase_date : nat64;
+};
+
+type TradeOffer = record {
+  id : nat64;
+  art_id : nat64;
+  seller : principal;
+  tokens_for_sale : nat64;
+  price_per_token : nat64;
+  created_at : nat64;
+  active : bool;
+};
+
+type UserProfile = record {
+  user_principal : principal;
+  username : text;
+  email : text;
+  created_at : nat64;
+  total_investments : nat64;
+  verified : bool;
+};
+
+type CreateArtRequest = record {
+  title : text;
+  artist : text;
+  description : text;
+  image_url : text;
+  total_tokens : nat64;
+  price_per_token : nat64;
+};
+
+type CreateTradeOfferRequest = record {
+  art_id : nat64;
+  tokens_for_sale : nat64;
+  price_per_token : nat64;
+};
+
+type CreateUserRequest = record {
+  username : text;
+  email : text;
+};
+
+type Result = variant { Ok : ArtPiece; Err : text };
+type Result_1 = variant { Ok : UserProfile; Err : text };
+type Result_2 = variant { Ok : TokenOwnership; Err : text };
+type Result_3 = variant { Ok : TradeOffer; Err : text };
+type Result_4 = variant { Ok : text; Err : text };
+
+service : {
+  accept_trade_offer : (nat64) -> (Result_4);
+  cancel_trade_offer : (nat64) -> (Result_4);
+  create_art_piece : (CreateArtRequest) -> (Result);
+  create_trade_offer : (CreateTradeOfferRequest) -> (Result_3);
+  create_user_profile : (CreateUserRequest) -> (Result_1);
+  get_active_trade_offers : (opt nat64) -> (vec TradeOffer) query;
+  get_all_art_pieces : () -> (vec ArtPiece) query;
+  get_art_ownership_distribution : (nat64) -> (vec TokenOwnership) query;
+  get_art_piece : (nat64) -> (opt ArtPiece) query;
+  get_art_statistics : (nat64) -> (opt record { nat64; nat64; nat64 }) query;
+  get_platform_statistics : () -> (record { nat64; nat64; nat64; nat64 }) query;
+  get_user_profile : (opt principal) -> (opt UserProfile) query;
+  get_user_tokens : (opt principal) -> (vec TokenOwnership) query;
+  purchase_tokens : (nat64, nat64) -> (Result_2);
+  verify_art_piece : (nat64) -> (Result_4);
+  verify_user : (principal) -> (Result_4);
+}
