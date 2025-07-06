@@ -299,4 +299,3 @@ const offer = await icpService.createTradeOffer(offerData);
 Built with ❤️ on the Internet Computer
 
 # Blockchain-Art-Co-ownership
-# Blockchain-Art-Co-ownership
