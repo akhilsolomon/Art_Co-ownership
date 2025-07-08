@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react'
-
-import icpService from './lib/icp';
-
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.jsx'
@@ -930,32 +927,13 @@ function App() {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false)
 
   const handleLogin = async () => {
-    try {
-      const principal = await icpService.login();
-      console.log("Logged in as:", principal.toText());
+    // In a real app, this would use Internet Identity
+    setUser(mockUserProfile)
+  }
 
-      // Optionally fetch the user profile from backend
-      const profile = await icpService.getUserProfile();
-      if (profile) {
-        setUser(profile); // Use real user profile
-      } else {
-        // Optionally prompt user to create profile if not found
-        alert("No user profile found. Please create one.");
-      }
-    } catch (err) {
-      console.error("Login failed:", err);
-      alert("Login failed. Please try again.");
-      }
-  };
-  const handleLogout = async () => {
-    try {
-      await icpService.logout();
-      setUser(null);
-      console.log("Logged out");
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
+  const handleLogout = () => {
+    setUser(null)
+  }
 
   const handlePurchase = (art) => {
     if (!user) {
