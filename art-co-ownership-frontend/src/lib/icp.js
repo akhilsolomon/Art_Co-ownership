@@ -1,12 +1,25 @@
-import { Actor, HttpAgent } from '@dfinity/agent'
+import * as DfinityAgent from '@dfinity/agent';
+
+
 import { AuthClient } from '@dfinity/auth-client'
 import { Principal } from '@dfinity/principal'
+import {
+  idlFactory as backend_idl,
+  canisterId as backend_canister_id,
+} from "../../../declarations/art_co_ownership_backend";
+
 
 // Canister IDs - these will be set after deployment
-const BACKEND_CANISTER_ID = process.env.REACT_APP_BACKEND_CANISTER_ID || 'rrkah-fqaaa-aaaaa-aaaaq-cai'
-const INTERNET_IDENTITY_URL = process.env.NODE_ENV === 'production' 
+const BACKEND_CANISTER_ID = backend_canister_id;
+
+import canister_ids from '../../../.dfx/local/canister_ids.json';
+
+const INTERNET_IDENTITY_CANISTER_ID =
+  canister_ids.internet_identity.local;
+
+const INTERNET_IDENTITY_URL = process.env.NODE_ENV === 'production'
   ? 'https://identity.ic0.app'
-  : `http://localhost:4943/?canisterId=${process.env.REACT_APP_INTERNET_IDENTITY_CANISTER_ID}`
+  : `http://${INTERNET_IDENTITY_CANISTER_ID}.localhost:4943`;
 
 // IDL (Interface Description Language) for the backend canister
 const idlFactory = ({ IDL }) => {
@@ -42,7 +55,7 @@ const idlFactory = ({ IDL }) => {
   });
   
   const UserProfile = IDL.Record({
-    'principal' : IDL.Principal,
+    'user_principal' : IDL.Principal,
     'username' : IDL.Text,
     'email' : IDL.Text,
     'created_at' : IDL.Nat64,
@@ -124,6 +137,7 @@ class ICPService {
   }
 
   async createActor() {
+
     const agent = new HttpAgent({
       identity: this.identity,
       host: process.env.NODE_ENV === 'production' ? 'https://ic0.app' : 'http://localhost:4943',
@@ -133,28 +147,28 @@ class ICPService {
     if (process.env.NODE_ENV !== 'production') {
       await agent.fetchRootKey();
     }
-
-    this.actor = Actor.createActor(idlFactory, {
-      agent,
-      canisterId: BACKEND_CANISTER_ID,
-    });
+    this.actor = Actor.createActor(backend_idl, {
+    agent,
+    canisterId: BACKEND_CANISTER_ID,
+  });
   }
 
   async createAnonymousActor() {
-    const agent = new HttpAgent({
-      host: process.env.NODE_ENV === 'production' ? 'https://ic0.app' : 'http://localhost:4943',
-    });
+  const agent = new HttpAgent({
+  host: process.env.NODE_ENV === 'production' ? 'https://ic0.app' : 'http://localhost:4943',
+});
 
-    // Fetch root key for local development
-    if (process.env.NODE_ENV !== 'production') {
-      await agent.fetchRootKey();
-    }
-
-    this.actor = Actor.createActor(idlFactory, {
-      agent,
-      canisterId: BACKEND_CANISTER_ID,
-    });
+  // Fetch root key for local development
+  if (process.env.NODE_ENV !== 'production') {
+    await agent.fetchRootKey();
   }
+
+  this.actor = Actor.createActor(idlFactory, {
+    agent,
+    canisterId: BACKEND_CANISTER_ID, // ✅ already patched earlier
+  });
+}
+
 
   async login() {
     if (!this.authClient) {
